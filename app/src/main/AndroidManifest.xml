@@ -19,7 +19,7 @@
     <activity android:name=".BiteEditor"/>
     -->
     <activity
-        android:name=".FirebaseTestActivity"
+        android:name=".BitesChat"
         android:label="@string/title_activity_firebase_test"
         android:theme="@style/AppTheme.NoActionBar">
       <intent-filter>
