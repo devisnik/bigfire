@@ -1,5 +1,6 @@
 package de.devisnik.android.bigmouth
 
+
 import android.app.AlertDialog.Builder
 import android.app.Dialog
 import android.content.ActivityNotFoundException
@@ -15,15 +16,14 @@ import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.MenuInflater
 import android.view.View
-import android.widget.EditText
 import de.devisnik.android.bigmouth.data.SoundBite
+import kotlinx.android.synthetic.main.activity_bites_chat.*
 import java.util.*
 
 class BitesChat : AppCompatActivity(), OnInitListener {
 
     private var itsTextToSpeech: TextToSpeech? = null
     private var itsRestoreAudio = -1
-    private var input: EditText? = null
 
     private inner class InstallTTSDialogBuilder : Builder(this@BitesChat) {
 
@@ -49,10 +49,8 @@ class BitesChat : AppCompatActivity(), OnInitListener {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         setContentView(R.layout.activity_bites_chat)
 
-        input = findViewById(R.id.chat_input) as EditText
-
-        findViewById(R.id.chat_send).setOnClickListener {
-            val message = input!!.text.toString()
+        chat_send.setOnClickListener {
+            val message = chat_input.text.toString()
             val bite = createBiteWithDefaults(message)
             speak(bite)
         }
@@ -84,7 +82,7 @@ class BitesChat : AppCompatActivity(), OnInitListener {
         startActivityForResult(ttsIntent, CHECK_TTS)
     }
 
-    private fun createBiteWithDefaults(message : String): SoundBite {
+    private fun createBiteWithDefaults(message: String): SoundBite {
         return SoundBite(id = 0,
                 language = getPrefValue(R.string.pref_language),
                 pitch = getPrefValue(R.string.pref_pitch),
