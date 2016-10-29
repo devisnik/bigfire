@@ -47,15 +47,16 @@ public class FirebaseTestActivity extends AppCompatActivity {
       }
     });
 
-    TextView value = (TextView) findViewById(R.id.test_value_text);
+    final TextView value = (TextView) findViewById(R.id.test_value_text);
 
     myRef.addValueEventListener(new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         // This method is called once with the initial value and again
         // whenever data at this location is updated.
-        String value = dataSnapshot.getValue(String.class);
-        Log.d(TAG, "Value is: " + value);
+        String data = dataSnapshot.getValue(String.class);
+        value.setText(data);
+        Log.d(TAG, "Value is: " + data);
       }
 
       @Override
