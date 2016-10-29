@@ -17,10 +17,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 import de.devisnik.android.bigmouth.data.SoundBite
 import kotlinx.android.synthetic.main.activity_bites_chat.*
 import java.util.*
@@ -95,7 +92,13 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
             value.toString()
         }
         val bite = createBiteWithDefaults(message)
-        speak(bite)
+
+
+        val ref = p0.ref!!
+        speak(bite, ref)
+
+
+
     }
 
     private fun registerSpeaker(channel: String, database: FirebaseDatabase) {
@@ -177,12 +180,16 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         return Locale(splitData[0], splitData[1])
     }
 
-    private fun speak(bite: SoundBite) {
+    private fun speak(bite: SoundBite, ref: DatabaseReference) {
         if (itsTextToSpeech == null) {
             LOGGER.e("TTS not properly set up!")
             return
         }
-        itsTextToSpeech!!.setOnUtteranceCompletedListener { adjustAudio(itsRestoreAudio) }
+        itsTextToSpeech!!.setOnUtteranceCompletedListener {
+            adjustAudio(itsRestoreAudio)
+            ref.removeValue()
+        }
+
         if (getString(R.string.volume_value_no_adjust) == bite.volume) {
             itsRestoreAudio = currentAudio
         } else {
