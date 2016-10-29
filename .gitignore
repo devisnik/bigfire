@@ -1,0 +1,20 @@
+.gradle
+gradle.properties
+/local.properties
+/.idea
+.DS_Store
+**/build
+android/releases
+android/sync_build.sh
+android/sync_releasenotes.sh
+*.iml
+*.keystore
+*.p12
+**/war
+bin/
+
+# eclipse
+.project
+.settings/
+.classpath
+
