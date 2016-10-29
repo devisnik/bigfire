@@ -14,6 +14,10 @@ android {
     testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
   }
   buildTypes {
+
+    applicationVariants.all { variant -> variant.buildConfigField "String", "YANDEX_API_KEY", "\"" + getApiKey() + "\""
+    }
+
     release {
       minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -22,6 +26,12 @@ android {
   sourceSets {
     main.java.srcDirs += 'src/main/kotlin'
   }
+}
+
+def getApiKey() {
+  def Properties props = new Properties()
+  props.load(new FileInputStream(new File('secrets.properties')))
+  return props['YANDEX_API_KEY']
 }
 
 dependencies {
