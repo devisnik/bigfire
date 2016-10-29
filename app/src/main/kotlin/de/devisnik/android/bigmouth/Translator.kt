@@ -2,6 +2,7 @@ package de.devisnik.android.bigmouth
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import org.json.JSONObject
 
 class Translator {
 
@@ -22,12 +23,13 @@ class Translator {
                 .get()
                 .build()
         val response = client.newCall(request).execute()
-        return response.body().string()
+        val string = response.body().string()
+        val jsonObject = JSONObject(string)
+        return jsonObject.getJSONArray("text")[0].toString()
     }
 }
 
 fun main(args: Array<String>) {
     val translated = Translator().translate("hello", from = "en", to = "de")
-
     println(translated)
 }

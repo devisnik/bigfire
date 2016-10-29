@@ -4,6 +4,7 @@ package de.devisnik.android.bigmouth
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
+import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.speech.tts.TextToSpeech
@@ -52,12 +53,23 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, channels)
 
         chat_send.setOnClickListener {
-            val message = chat_input.text.toString()
             val channel = channels[chat_input_channel_chooser.selectedItemPosition]
-            val bite = createBiteWithDefaults(message)
+            val task = object : AsyncTask<String, Void, String>() {
+                override fun doInBackground(vararg text: String): String {
+                    val from = getPrefValue(R.string.pref_language).substring(0..1)
+                    return Translator().translate(text[0],
+                            from = from,
+                            to   = "en")
+                }
 
-            val channelRef = database.getReference(channel)
-            channelRef.setValue(bite)
+                override fun onPostExecute(result: String) {
+                    val bite = createBiteWithDefaults(result)
+                    bite.language = "en-GB"
+                    val channelRef = database.getReference(channel)
+                    channelRef.setValue(bite)
+                }
+            }
+            task.execute(chat_input.text.toString())
         }
     }
 
