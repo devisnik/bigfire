@@ -73,7 +73,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     private fun initChannels(database: FirebaseDatabase, channels: List<String>) {
-        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, channels)
+        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, channels)
 
         chat_send.setOnClickListener {
             val message = chat_input.text.toString()
