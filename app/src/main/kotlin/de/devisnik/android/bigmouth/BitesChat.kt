@@ -16,6 +16,10 @@ import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.MenuInflater
 import android.view.View
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import de.devisnik.android.bigmouth.data.SoundBite
 import kotlinx.android.synthetic.main.activity_bites_chat.*
 import java.util.*
@@ -49,11 +53,31 @@ class BitesChat : AppCompatActivity(), OnInitListener {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         setContentView(R.layout.activity_bites_chat)
 
+        val database = FirebaseDatabase.getInstance()
+        val myRef = database.getReference("message")
+
         chat_send.setOnClickListener {
             val message = chat_input.text.toString()
-            val bite = createBiteWithDefaults(message)
-            speak(bite)
+            myRef.setValue(message)
         }
+
+        myRef.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError?) {
+
+            }
+
+            override fun onDataChange(p0: DataSnapshot?) {
+                val value = p0!!.getValue(String::class.java)
+
+                val message = if (value == null) {
+                    ""
+                } else {
+                    value.toString()
+                }
+                val bite = createBiteWithDefaults(message)
+                speak(bite)
+            }
+        })
     }
 
     override fun onStart() {
