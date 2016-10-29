@@ -52,8 +52,8 @@ class BitesChat : AppCompatActivity(), OnInitListener {
         input = findViewById(R.id.chat_input) as EditText
 
         findViewById(R.id.chat_send).setOnClickListener {
-            val bite = createBiteWithDefaults()
-            bite.message = input!!.text.toString()
+            val message = input!!.text.toString()
+            val bite = createBiteWithDefaults(message)
             speak(bite)
         }
     }
@@ -84,13 +84,13 @@ class BitesChat : AppCompatActivity(), OnInitListener {
         startActivityForResult(ttsIntent, CHECK_TTS)
     }
 
-    private fun createBiteWithDefaults(): SoundBite {
-        val bite = SoundBite()
-        bite.language = getPrefValue(R.string.pref_language)
-        bite.pitch = getPrefValue(R.string.pref_pitch)
-        bite.speed = getPrefValue(R.string.pref_speed)
-        bite.volume = getPrefValue(R.string.pref_volume)
-        return bite
+    private fun createBiteWithDefaults(message : String): SoundBite {
+        return SoundBite(id = 0,
+                language = getPrefValue(R.string.pref_language),
+                pitch = getPrefValue(R.string.pref_pitch),
+                speed = getPrefValue(R.string.pref_speed),
+                volume = getPrefValue(R.string.pref_volume),
+                message = message, title = message)
     }
 
     private fun getPrefValue(resourceId: Int): String {
