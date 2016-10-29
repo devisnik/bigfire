@@ -12,10 +12,9 @@ import android.preference.PreferenceManager
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
 import android.support.v7.app.AppCompatActivity
-import android.view.ContextMenu
-import android.view.ContextMenu.ContextMenuInfo
+import android.view.Menu
 import android.view.MenuInflater
-import android.view.View
+import android.view.MenuItem
 import android.widget.ArrayAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -223,9 +222,20 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         return super.onCreateDialog(id)
     }
 
-    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenuInfo) {
-        MenuInflater(this).inflate(R.menu.bites_context, menu)
-        super.onCreateContextMenu(menu, v, menuInfo)
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        MenuInflater(this).inflate(R.menu.bites_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+
+        if (item!!.itemId == R.id.settings) {
+            val intent = Intent(this, BitePreferences::class.java)
+            startActivity(intent)
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
     }
 
     internal fun stopSpeaking() {
