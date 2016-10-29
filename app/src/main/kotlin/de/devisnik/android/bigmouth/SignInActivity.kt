@@ -106,8 +106,7 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             }
 
             val users = FirebaseDatabase.getInstance().getReference("users")
-            val user = users.push()
-            user.setValue(acct.displayName)
+            users.updateChildren(mapOf(Pair(acct.id, acct.displayName)))
 
             val intent = Intent(this@SignInActivity, BitesChat::class.java)
             startActivity(intent)
