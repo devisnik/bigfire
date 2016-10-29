@@ -22,6 +22,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -118,7 +120,7 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
   // [END onactivityresult]
 
   // [START auth_with_google]
-  private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+  private void firebaseAuthWithGoogle(final GoogleSignInAccount acct) {
 
     AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
     mAuth.signInWithCredential(credential)
@@ -136,6 +138,10 @@ public class SignInActivity extends AppCompatActivity implements GoogleApiClient
                   Toast.LENGTH_SHORT).show();
               return;
             }
+
+            DatabaseReference users = FirebaseDatabase.getInstance().getReference("users");
+            DatabaseReference user = users.push();
+            user.setValue(acct.getDisplayName());
 
             Intent intent = new Intent(SignInActivity.this, BitesChat.class);
             startActivity(intent);
