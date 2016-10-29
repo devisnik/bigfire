@@ -16,8 +16,8 @@ import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.MenuInflater
 import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -60,32 +60,20 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         database.getReference("users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(p0: DataSnapshot?) {
                 val channels = p0!!.children.map { it.value as String }.distinct().toList()
-                initUI(database, channels)
+                initChannels(database, channels)
             }
 
             override fun onCancelled(p0: DatabaseError?) {
             }
         })
 
+
+        val currentUser = FirebaseAuth.getInstance().currentUser!!.displayName!!
+        registerSpeaker(currentUser, database)
     }
 
-    private fun initUI(database: FirebaseDatabase, channels: List<String>) {
+    private fun initChannels(database: FirebaseDatabase, channels: List<String>) {
         chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, channels)
-        chat_output_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, channels)
-        registerSpeaker(channels[chat_output_channel_chooser.selectedItemPosition], database)
-
-        chat_output_channel_chooser.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-            }
-
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
-                channels.withIndex()
-                        .filter { it.index != index }
-                        .forEach { unregister(it.value, database) }
-
-                registerSpeaker(channels[index], database)
-            }
-        }
 
         chat_send.setOnClickListener {
             val message = chat_input.text.toString()
