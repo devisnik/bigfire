@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="pref_language">bite.language</string>
+<string name="pref_pitch">bite.pitch</string>
+<string name="pref_volume">bite.volume</string>
+<string name="pref_speed">bite.speed</string>
+
+<string name="language_value_us">en-US</string>
+<string name="language_value_gb">en-GB</string>
+<string name="language_value_de">de-DE</string>
+<string name="language_value_fr">fr-FR</string>
+<string name="language_value_it">it-IT</string>
+<string name="language_value_sp">spa-ESP</string>
+
+<string name="pitch_value_very_low">0.5</string>
+<string name="pitch_value_low">0.75</string>
+<string name="pitch_value_normal">1.0</string>
+<string name="pitch_value_high">1.5</string>
+<string name="pitch_value_very_high">2.0</string>
+
+<string name="volume_value_no_adjust">0</string>
+<string name="volume_value_very_low">0.1</string>
+<string name="volume_value_low">0.3</string>
+<string name="volume_value_normal">0.5</string>
+<string name="volume_value_high">0.75</string>
+<string name="volume_value_very_high">1.0</string>
+
+<string name="speed_value_very_slow">0.5</string>
+<string name="speed_value_slow">0.75</string>
+<string name="speed_value_normal">1.0</string>
+<string name="speed_value_fast">1.5</string>
+<string name="speed_value_very_fast">2.0</string>
+</resources>

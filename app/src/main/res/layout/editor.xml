@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/ScrollView01"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content">
+	<LinearLayout
+		xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:app="http://schemas.android.com/apk/res/de.devisnik.android.bigmouth"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		<TextView
+			android:id="@+id/titleLabel"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/title_label" />
+		<EditText
+			android:text=""
+			android:id="@+id/title"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:cursorVisible="true"
+			android:inputType="text" />
+		<TextView
+			android:id="@+id/messageLabel"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:text="@string/message_label" />
+		<EditText
+			android:text=""
+			android:id="@+id/message"
+			android:layout_width="fill_parent"
+			android:layout_height="fill_parent"
+			android:contentDescription="Text zum Vorlesen"
+			android:cursorVisible="true"
+			android:inputType="text|textMultiLine|textImeMultiLine"
+			android:gravity="top|left" />
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/LocaleLabel"
+			android:text="@string/locale_label" />
+		<de.devisnik.android.bigmouth.ValueSpinner
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/LocaleSpinner"
+			android:prompt="@string/locale_dialog_label"
+			android:entries="@array/languages"
+			app:entry_values="@array/language_values" />
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/PitchLabel"
+			android:text="@string/pitch_label" />
+		<de.devisnik.android.bigmouth.ValueSpinner
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/PitchSpinner"
+			android:prompt="@string/pitch_dialog_label"
+			android:entries="@array/pitches"
+			app:entry_values="@array/pitch_values" />
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/VolumeLabel"
+			android:text="@string/volume_label" />
+		<de.devisnik.android.bigmouth.ValueSpinner
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/VolumeSpinner"
+			android:prompt="@string/volume_dialog_label"
+			android:entries="@array/volumes"
+			app:entry_values="@array/volume_values" />
+		<TextView
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/SpeedLabel"
+			android:text="@string/speed_label" />
+		<de.devisnik.android.bigmouth.ValueSpinner
+			android:layout_height="wrap_content"
+			android:layout_width="fill_parent"
+			android:id="@+id/SpeedSpinner"
+			android:prompt="@string/speed_dialog_label"
+			android:entries="@array/speeds"
+			app:entry_values="@array/speed_values" />
+	</LinearLayout>
+</ScrollView>

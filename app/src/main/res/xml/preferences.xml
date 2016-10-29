@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<PreferenceCategory
+		android:title="@string/pref_default_category">
+		<ListPreference
+			android:key="@string/pref_language"
+			android:entryValues="@array/language_values"
+			android:entries="@array/languages"
+			android:defaultValue="@string/language_value_us"
+			android:title="@string/locale_label"
+			android:dialogTitle="@string/locale_dialog_label" />
+		<ListPreference
+			android:key="@string/pref_pitch"
+			android:entryValues="@array/pitch_values"
+			android:entries="@array/pitches"
+			android:defaultValue="@string/pitch_value_normal"
+			android:title="@string/pitch_label"
+			android:dialogTitle="@string/pitch_dialog_label" />
+		<ListPreference
+			android:key="@string/pref_volume"
+			android:entryValues="@array/volume_values"
+			android:entries="@array/volumes"
+			android:defaultValue="@string/volume_value_normal"
+			android:title="@string/volume_label"
+			android:dialogTitle="@string/volume_dialog_label" />
+		<ListPreference
+			android:key="@string/pref_speed"
+			android:entryValues="@array/speed_values"
+			android:entries="@array/speeds"
+			android:defaultValue="@string/speed_value_normal"
+			android:title="@string/speed_label"
+			android:dialogTitle="@string/speed_dialog_label" />
+	</PreferenceCategory>
+
+</PreferenceScreen>
