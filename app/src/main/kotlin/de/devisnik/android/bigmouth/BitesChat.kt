@@ -75,7 +75,9 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
             val message = chat_input.text.toString()
             val channel = channels[chat_input_channel_chooser.selectedItemPosition]
             val ref = database.getReference(channel)
-            ref.setValue(message)
+
+            val bite = createBiteWithDefaults(message)
+            ref.setValue(bite)
         }
     }
 
@@ -84,20 +86,12 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     override fun onDataChange(p0: DataSnapshot?) {
-        val value = p0!!.getValue(String::class.java)
-
-        val message = if (value == null) {
-            ""
-        } else {
-            value.toString()
-        }
-        val bite = createBiteWithDefaults(message)
-
+        val value = p0!!.getValue(SoundBite::class.java)
 
         val ref = p0.ref!!
-        speak(bite, ref)
-
-
+        if (value != null) {
+            speak(value, ref)
+        }
 
     }
 
@@ -138,12 +132,16 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     private fun createBiteWithDefaults(message: String): SoundBite {
-        return SoundBite(id = 0,
-                language = getPrefValue(R.string.pref_language),
-                pitch = getPrefValue(R.string.pref_pitch),
-                speed = getPrefValue(R.string.pref_speed),
-                volume = getPrefValue(R.string.pref_volume),
-                message = message, title = message)
+        val soundBite = SoundBite()
+        soundBite.id = 0
+        soundBite.language = getPrefValue(R.string.pref_language)
+        soundBite.pitch = getPrefValue(R.string.pref_pitch)
+        soundBite.speed = getPrefValue(R.string.pref_speed)
+        soundBite.volume = getPrefValue(R.string.pref_volume)
+        soundBite.message = message
+        soundBite.title = message
+
+        return soundBite
     }
 
     private fun getPrefValue(resourceId: Int): String {
@@ -198,7 +196,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         val params = HashMap<String, String>()
         params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "text")
         itsTextToSpeech!!.setPitch(java.lang.Float.parseFloat(bite.pitch))
-        itsTextToSpeech!!.language = parseLocale(bite.language)
+        itsTextToSpeech!!.language = parseLocale(bite.language!!)
         itsTextToSpeech!!.setSpeechRate(java.lang.Float.parseFloat(bite.speed))
         itsTextToSpeech!!.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
     }

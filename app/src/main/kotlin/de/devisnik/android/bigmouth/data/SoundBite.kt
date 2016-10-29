@@ -1,5 +1,17 @@
 package de.devisnik.android.bigmouth.data
 
-data class SoundBite(val id: Long, val title: String, val message: String,
-                     val language: String, val pitch: String,
-                     val volume: String, val speed: String)
+class SoundBite {
+
+    constructor()
+
+
+    var id: Long? = null
+    var title: String? = null
+    var message: String? = null
+    var language: String? = null
+    var pitch: String? = null
+    var volume: String? = null
+    var speed: String? = null
+}
+
+
