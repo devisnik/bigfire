@@ -16,6 +16,7 @@ import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.MenuInflater
 import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -25,7 +26,7 @@ import de.devisnik.android.bigmouth.data.SoundBite
 import kotlinx.android.synthetic.main.activity_bites_chat.*
 import java.util.*
 
-class BitesChat : AppCompatActivity(), OnInitListener {
+class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
     private var itsTextToSpeech: TextToSpeech? = null
     private var itsRestoreAudio = -1
@@ -54,33 +55,58 @@ class BitesChat : AppCompatActivity(), OnInitListener {
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         setContentView(R.layout.activity_bites_chat)
 
-        chat_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CHANNELS)
-
         val database = FirebaseDatabase.getInstance()
-        val myRef = database.getReference("message")
+
+        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CHANNELS)
+        chat_output_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CHANNELS)
+        registerSpeaker(CHANNELS[chat_output_channel_chooser.selectedItemPosition], database)
+
+        chat_output_channel_chooser.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
+                CHANNELS.withIndex()
+                        .filter { it.index != index }
+                        .forEach { unregister(it.value, database) }
+
+                registerSpeaker(CHANNELS[index], database)
+            }
+        }
 
         chat_send.setOnClickListener {
             val message = chat_input.text.toString()
-            myRef.setValue(message)
+            val channel = CHANNELS[chat_input_channel_chooser.selectedItemPosition]
+            val ref = database.getReference(channel)
+            ref.setValue(message)
         }
 
-        myRef.addValueEventListener(object : ValueEventListener {
-            override fun onCancelled(p0: DatabaseError?) {
+    }
 
-            }
+    override fun onCancelled(p0: DatabaseError?) {
 
-            override fun onDataChange(p0: DataSnapshot?) {
-                val value = p0!!.getValue(String::class.java)
+    }
 
-                val message = if (value == null) {
-                    ""
-                } else {
-                    value.toString()
-                }
-                val bite = createBiteWithDefaults(message)
-                speak(bite)
-            }
-        })
+    override fun onDataChange(p0: DataSnapshot?) {
+        val value = p0!!.getValue(String::class.java)
+
+        val message = if (value == null) {
+            ""
+        } else {
+            value.toString()
+        }
+        val bite = createBiteWithDefaults(message)
+        speak(bite)
+    }
+
+    private fun registerSpeaker(channel: String, database: FirebaseDatabase) {
+        val myRef = database.getReference(channel)
+        myRef.addValueEventListener(this)
+    }
+
+    private fun unregister(channel : String, database: FirebaseDatabase) {
+        val myRef = database.getReference(channel)
+        myRef.removeEventListener(this)
     }
 
     override fun onStart() {
