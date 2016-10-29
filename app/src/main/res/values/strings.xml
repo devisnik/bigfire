@@ -1,64 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="dialog_install_tts_title">Install TTS</string>
-	<string name="dialog_install_tts_message">Text-to-speech does not work, the language data is missing. Please install it!</string>
-	<string name="dialog_install_tts_button">"Install Now"</string>
-    <string name="menu_edit_shortcut">E</string>
-    <string name="menu_delete_shortcut">D</string>
-    <string name="menu_cancel_shortcut">C</string>
-    <string name="menu_save_shortcut">S</string>
-    <string name="menu_settings_shortcut">S</string>
-    <string name="menu_create_shortcut">C</string>
-    <string name="speed_dialog_label">Select Speed</string>
-    <string name="volume_dialog_label">Select Volume</string>
-    <string name="pitch_dialog_label">Select Pitch</string>
-    <string name="locale_dialog_label">Select Language</string>
-    <string name="menu_cancel">Cancel</string>
-    <string name="menu_save">Save</string>
-    <string name="menu_settings">Settings</string>
-    <string name="menu_create">Create</string>
-    <string name="menu_delete">Delete</string>
-    <string name="menu_edit">Edit</string>
-    <string name="menu_speak">Speak</string>
-	<string	name="pref_default_category">Defaults</string>   
-    <string name="app_name">Bigmouth</string>
-	<string name="title_label">Title</string>
-	<string name="message_label">Message</string>
-	<string name="locale_label">Language</string>
-	<string name="pitch_label">Pitch</string>
-	<string name="volume_label">Volume</string>
-	<string name="speed_label">Speed</string>
-	<string name="language_us">American English</string>
-	<string name="language_gb">British English</string>
-	<string name="language_de">German</string>
-	<string name="language_it">Italian</string>
-	<string name="language_esp">Spanish</string>
-	<string name="language_fr">French</string>
-	<string name="no_adjust">Unadjusted</string>
-	<string name="very_low">Very Low</string>
-	<string name="low">Low</string>
-	<string name="normal">Normal</string>
-	<string name="high">High</string>
-	<string name="very_high">Very High</string>
-	<string name="very_slow">Very Slow</string>
-	<string name="slow">Slow</string>
-	<string name="fast">Fast</string>
-	<string name="very_fast">Very Fast</string>
-	<string name="toast_saved">Snippet saved!</string>
-	<string name="toast_deleted">Snippet deleted!</string>	
-	<string name="stop_talking_question">Stop Talking ?</string>	
-	<string name="stop_button">Stop</string>	
-	<string name="cancel_button">Cancel</string>	
-	<string name="ok_button">OK</string>	
-	<string name="confirm_delete_title">Really Delete ?</string>	
-	<string-array name="usage_titles">
-		<item>1. What is BigMouth ?</item>
-		<item>2. How it works</item>
-		<item>3. Default Settings</item>
-	</string-array>
-	<string-array name="usage_messages">
-		<item>BigMouth is a speech utility that uses Android\'s text to speech engine to pronounce whatever you like.</item>
-		<item>Use the menu button to add new text, click on a list item to pronounce its message, click and hold a list item to access additional actions.</item>
-		<item>Via the settings menu action you can define default values for language, pitch, volume and speed of items to be created.</item>
-	</string-array>
+  <string name="dialog_install_tts_title">Install TTS</string>
+  <string name="dialog_install_tts_message">Text-to-speech does not work, the language data is missing. Please install it!</string>
+  <string name="dialog_install_tts_button">"Install Now"</string>
+  <string name="menu_edit_shortcut">E</string>
+  <string name="menu_delete_shortcut">D</string>
+  <string name="menu_cancel_shortcut">C</string>
+  <string name="menu_save_shortcut">S</string>
+  <string name="menu_settings_shortcut">S</string>
+  <string name="menu_create_shortcut">C</string>
+  <string name="speed_dialog_label">Select Speed</string>
+  <string name="volume_dialog_label">Select Volume</string>
+  <string name="pitch_dialog_label">Select Pitch</string>
+  <string name="locale_dialog_label">Select Language</string>
+  <string name="menu_cancel">Cancel</string>
+  <string name="menu_save">Save</string>
+  <string name="menu_settings">Settings</string>
+  <string name="menu_create">Create</string>
+  <string name="menu_delete">Delete</string>
+  <string name="menu_edit">Edit</string>
+  <string name="menu_speak">Speak</string>
+  <string name="pref_default_category">Defaults</string>
+  <string name="app_name">Bigmouth</string>
+  <string name="title_label">Title</string>
+  <string name="message_label">Message</string>
+  <string name="locale_label">Language</string>
+  <string name="pitch_label">Pitch</string>
+  <string name="volume_label">Volume</string>
+  <string name="speed_label">Speed</string>
+  <string name="language_us">American English</string>
+  <string name="language_gb">British English</string>
+  <string name="language_de">German</string>
+  <string name="language_it">Italian</string>
+  <string name="language_esp">Spanish</string>
+  <string name="language_fr">French</string>
+  <string name="no_adjust">Unadjusted</string>
+  <string name="very_low">Very Low</string>
+  <string name="low">Low</string>
+  <string name="normal">Normal</string>
+  <string name="high">High</string>
+  <string name="very_high">Very High</string>
+  <string name="very_slow">Very Slow</string>
+  <string name="slow">Slow</string>
+  <string name="fast">Fast</string>
+  <string name="very_fast">Very Fast</string>
+  <string name="toast_saved">Snippet saved!</string>
+  <string name="toast_deleted">Snippet deleted!</string>
+  <string name="stop_talking_question">Stop Talking ?</string>
+  <string name="stop_button">Stop</string>
+  <string name="cancel_button">Cancel</string>
+  <string name="ok_button">OK</string>
+  <string name="confirm_delete_title">Really Delete ?</string>
+  <string-array name="usage_titles">
+    <item>1. What is BigMouth ?</item>
+    <item>2. How it works</item>
+    <item>3. Default Settings</item>
+  </string-array>
+  <string-array name="usage_messages">
+    <item>BigMouth is a speech utility that uses Android\'s text to speech engine to pronounce whatever you like.</item>
+    <item>Use the menu button to add new text, click on a list item to pronounce its message, click and hold a list item to access additional actions.</item>
+    <item>Via the settings menu action you can define default values for language, pitch, volume and speed of items to be created.</item>
+  </string-array>
+  <string name="title_activity_firebase_test">FirebaseTest</string>
 </resources>
