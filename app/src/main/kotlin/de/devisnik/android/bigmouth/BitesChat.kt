@@ -59,7 +59,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
         database.getReference("users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(p0: DataSnapshot?) {
-                val channels = p0!!.children.map { it.value as String }.toList()
+                val channels = p0!!.children.map { it.value as String }.distinct().toList()
                 initUI(database, channels)
             }
 
