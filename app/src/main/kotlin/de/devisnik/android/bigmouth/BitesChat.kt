@@ -1,9 +1,6 @@
 package de.devisnik.android.bigmouth
 
 
-import android.app.AlertDialog.Builder
-import android.app.Dialog
-import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -27,39 +24,22 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     private var itsTextToSpeech: TextToSpeech? = null
     private var itsRestoreAudio = -1
 
-    private inner class InstallTTSDialogBuilder : Builder(this@BitesChat) {
-
-        init {
-            setTitle(R.string.dialog_install_tts_title)
-            setMessage(R.string.dialog_install_tts_message)
-            setPositiveButton(R.string.dialog_install_tts_button) { dialog, which ->
-                val installIntent = Intent()
-                installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
-                installIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                try {
-                    startActivity(installIntent)
-                } catch (e: ActivityNotFoundException) {
-                    LOGGER.e("while starting TTS installer.", e)
-                }
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         LOGGER.d("onCreate")
         super.onCreate(savedInstanceState)
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         setContentView(R.layout.activity_bites_chat)
+
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
 
         val database = FirebaseDatabase.getInstance()
 
         database.getReference("users").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(p0: DataSnapshot?) {
-                val channels = p0!!.children.map { it.value as String }.distinct().toList()
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                val channels = snapshot!!.children.map { it.value as String }.distinct().toList()
                 initChannels(database, channels)
             }
-
             override fun onCancelled(p0: DatabaseError?) {
+                //no-op
             }
         })
 
@@ -74,10 +54,10 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         chat_send.setOnClickListener {
             val message = chat_input.text.toString()
             val channel = channels[chat_input_channel_chooser.selectedItemPosition]
-            val ref = database.getReference(channel)
-
             val bite = createBiteWithDefaults(message)
-            ref.setValue(bite)
+
+            val channelRef = database.getReference(channel)
+            channelRef.setValue(bite)
         }
     }
 
@@ -85,14 +65,13 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
     }
 
-    override fun onDataChange(p0: DataSnapshot?) {
-        val value = p0!!.getValue(SoundBite::class.java)
+    override fun onDataChange(snapshot: DataSnapshot?) {
+        val value = snapshot!!.getValue(SoundBite::class.java)
 
-        val ref = p0.ref!!
+        val ref = snapshot.ref!!
         if (value != null) {
             speak(value, ref)
         }
-
     }
 
     private fun registerSpeaker(channel: String, database: FirebaseDatabase) {
@@ -100,24 +79,12 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         myRef.addValueEventListener(this)
     }
 
-    private fun unregister(channel: String, database: FirebaseDatabase) {
-        val myRef = database.getReference(channel)
-        myRef.removeEventListener(this)
-    }
-
     override fun onStart() {
-        LOGGER.d("onStart")
         super.onStart()
         startCheckTTS()
     }
 
-    override fun onRestart() {
-        LOGGER.d("onRestart")
-        super.onRestart()
-    }
-
     override fun onStop() {
-        LOGGER.d("onStop")
         if (itsTextToSpeech != null) {
             itsTextToSpeech!!.shutdown()
         }
@@ -150,13 +117,12 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
-        LOGGER.d("onActivityResult")
         when (requestCode) {
             CHECK_TTS -> {
                 if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
                     itsTextToSpeech = TextToSpeech(this, this)
                 } else {
-                    showDialog(DIALOG_INSTALL_TTS)
+                    InstallTTSDialogBuilder(this).create().show()
                 }
                 return
             }
@@ -220,13 +186,6 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         return oldVolume
     }
 
-    override fun onCreateDialog(id: Int): Dialog {
-        if (id == DIALOG_INSTALL_TTS) {
-            return InstallTTSDialogBuilder().create()
-        }
-        return super.onCreateDialog(id)
-    }
-
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         MenuInflater(this).inflate(R.menu.bites_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -253,7 +212,6 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
     companion object {
 
-        private val DIALOG_INSTALL_TTS = 555
         private val CHECK_TTS = 11
 
         private val LOGGER = Logger(BitesChat::class.java)
