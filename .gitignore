@@ -17,4 +17,5 @@ bin/
 .project
 .settings/
 .classpath
+google-services.json
 
