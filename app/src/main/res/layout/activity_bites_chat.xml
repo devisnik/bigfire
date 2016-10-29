@@ -4,11 +4,21 @@
     android:layout_height="fill_parent"
     android:orientation="vertical">
 
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Mic"/>
+
   <Spinner
       android:id="@+id/chat_input_channel_chooser"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       />
+
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="Speaker"/>
 
   <Spinner
       android:id="@+id/chat_output_channel_chooser"

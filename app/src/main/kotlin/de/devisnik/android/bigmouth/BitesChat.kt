@@ -104,7 +104,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         myRef.addValueEventListener(this)
     }
 
-    private fun unregister(channel : String, database: FirebaseDatabase) {
+    private fun unregister(channel: String, database: FirebaseDatabase) {
         val myRef = database.getReference(channel)
         myRef.removeEventListener(this)
     }
