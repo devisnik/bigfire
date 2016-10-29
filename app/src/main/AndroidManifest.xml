@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.devisnik.android.bigmouth">
 
-  <application
-      android:allowBackup="true"
+  <application android:allowBackup="true"
       android:icon="@mipmap/ic_launcher"
       android:label="@string/app_name"
       android:supportsRtl="true"
@@ -18,8 +17,7 @@
     </activity>
     <activity android:name=".BiteEditor"/>
     -->
-    <activity
-        android:name=".BitesChat"
+    <activity android:name=".SignInActivity"
         android:label="@string/title_activity_firebase_test"
         android:theme="@style/AppTheme.NoActionBar">
       <intent-filter>
@@ -28,6 +26,12 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+
+
+    <activity android:name=".BitesChat"
+        android:label="@string/title_activity_firebase_test"
+        android:theme="@style/AppTheme.NoActionBar"/>
+
   </application>
 
 </manifest>
