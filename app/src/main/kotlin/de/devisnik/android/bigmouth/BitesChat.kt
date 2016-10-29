@@ -57,30 +57,42 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
         val database = FirebaseDatabase.getInstance()
 
-        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CHANNELS)
-        chat_output_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CHANNELS)
-        registerSpeaker(CHANNELS[chat_output_channel_chooser.selectedItemPosition], database)
+        database.getReference("users").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(p0: DataSnapshot?) {
+                val channels = p0!!.children.map { it.value as String }.toList()
+                initUI(database, channels)
+            }
+
+            override fun onCancelled(p0: DatabaseError?) {
+            }
+        })
+
+    }
+
+    private fun initUI(database: FirebaseDatabase, channels: List<String>) {
+        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, channels)
+        chat_output_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, channels)
+        registerSpeaker(channels[chat_output_channel_chooser.selectedItemPosition], database)
 
         chat_output_channel_chooser.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(p0: AdapterView<*>?) {
             }
 
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
-                CHANNELS.withIndex()
+                channels.withIndex()
                         .filter { it.index != index }
                         .forEach { unregister(it.value, database) }
 
-                registerSpeaker(CHANNELS[index], database)
+                registerSpeaker(channels[index], database)
             }
         }
 
         chat_send.setOnClickListener {
             val message = chat_input.text.toString()
-            val channel = CHANNELS[chat_input_channel_chooser.selectedItemPosition]
+            val channel = channels[chat_input_channel_chooser.selectedItemPosition]
             val ref = database.getReference(channel)
             ref.setValue(message)
         }
-
     }
 
     override fun onCancelled(p0: DatabaseError?) {
@@ -242,7 +254,5 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         private val CHECK_TTS = 11
 
         private val LOGGER = Logger(BitesChat::class.java)
-
-        private val CHANNELS = arrayOf("channel_1", "channel_2", "channel_3")
     }
 }
