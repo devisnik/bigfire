@@ -16,6 +16,7 @@ import android.view.ContextMenu
 import android.view.ContextMenu.ContextMenuInfo
 import android.view.MenuInflater
 import android.view.View
+import android.widget.ArrayAdapter
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -52,6 +53,8 @@ class BitesChat : AppCompatActivity(), OnInitListener {
         super.onCreate(savedInstanceState)
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false)
         setContentView(R.layout.activity_bites_chat)
+
+        chat_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, CHANNELS)
 
         val database = FirebaseDatabase.getInstance()
         val myRef = database.getReference("message")
@@ -213,5 +216,7 @@ class BitesChat : AppCompatActivity(), OnInitListener {
         private val CHECK_TTS = 11
 
         private val LOGGER = Logger(BitesChat::class.java)
+
+        private val CHANNELS = arrayOf("channel_1", "channel_2", "channel_3")
     }
 }
