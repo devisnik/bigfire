@@ -75,7 +75,7 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
 
     }
 
-    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
@@ -111,16 +111,16 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
 
             val user = User()
             user.name = acct.displayName
-            user.language = getPrefValue(R.string.pref_language)
+            user.language = getPrefValue(R.string.pref_language)?:"en-GB"
 
-            users.updateChildren(mapOf(Pair(acct.id, user)))
+            users.child(acct.id).setValue(user)
 
             val intent = Intent(this@SignInActivity, BitesChat::class.java)
             startActivity(intent)
         })
     }
 
-    private fun getPrefValue(resourceId: Int): String {
+    private fun getPrefValue(resourceId: Int): String? {
         return PreferenceManager.getDefaultSharedPreferences(this).getString(getString(resourceId),
                 null)
     }

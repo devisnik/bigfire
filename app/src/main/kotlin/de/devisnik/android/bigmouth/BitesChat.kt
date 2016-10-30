@@ -56,20 +56,21 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         chat_input_channel_chooser.adapter = ArrayAdapter<User>(this, android.R.layout.simple_list_item_1, channels)
 
         chat_send.setOnClickListener {
-            val channel = channels[chat_input_channel_chooser.selectedItemPosition]
+            val user = channels[chat_input_channel_chooser.selectedItemPosition]
 
             val task = object : AsyncTask<String, Void, String>() {
                 override fun doInBackground(vararg text: String): String {
                     val from = getPrefValue(R.string.pref_language).substring(0..1)
+                    val to = user.language!!.substring(0..1)
                     return Translator().translate(text[0],
                             from = from,
-                            to   = "en")
+                            to   = to)
                 }
 
                 override fun onPostExecute(result: String) {
                     val bite = createBiteWithDefaults(result)
-                    bite.language = "en-GB"
-                    val channelRef = database.getReference(channel.name!!)
+                    bite.language = user.language
+                    val channelRef = database.getReference(user.name!!)
                     channelRef.setValue(bite)
                 }
             }
