@@ -1,14 +1,8 @@
 package de.devisnik.android.bigmouth.data
 
-class User {
-    constructor()
+data class User(var name: String = "", var language: String = "") {
 
-    var name: String? = null
-    var language: String? = null
-
-    override fun toString(): String {
-        return name!!
-    }
+    override fun toString(): String = name
 }
 
 

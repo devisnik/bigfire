@@ -110,8 +110,8 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             val users = FirebaseDatabase.getInstance().getReference("users")
 
             val user = User()
-            user.name = acct.displayName
-            user.language = getPrefValue(R.string.pref_language)?:"en-GB"
+            user.name = acct.displayName ?: ""
+            user.language = getPrefValue(R.string.pref_language) ?: "en-GB"
 
             users.child(acct.id).setValue(user)
 

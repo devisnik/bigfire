@@ -42,6 +42,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
                         .toList()
                 initChannels(database, users)
             }
+
             override fun onCancelled(p0: DatabaseError?) {
                 //no-op
             }
@@ -61,16 +62,15 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
             val task = object : AsyncTask<String, Void, String>() {
                 override fun doInBackground(vararg text: String): String {
                     val from = getPrefValue(R.string.pref_language).substring(0..1)
-                    val to = user.language!!.substring(0..1)
+                    val to = user.language.substring(0..1)
                     return Translator().translate(text[0],
                             from = from,
-                            to   = to)
+                            to = to)
                 }
 
                 override fun onPostExecute(result: String) {
-                    val bite = createBiteWithDefaults(result)
-                    bite.language = user.language
-                    val channelRef = database.getReference(user.name!!)
+                    val bite = createBiteWithDefaults(result).copy(language = user.language)
+                    val channelRef = database.getReference(user.name)
                     channelRef.setValue(bite)
                 }
             }
@@ -82,18 +82,17 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
     }
 
-    override fun onDataChange(snapshot: DataSnapshot?) {
-        val value = snapshot!!.getValue(SoundBite::class.java)
+    override fun onDataChange(snapshot: DataSnapshot) {
+        val value = snapshot.getValue(SoundBite::class.java)
 
-        val ref = snapshot.ref!!
         if (value != null) {
             display(value)
-            speak(value, ref)
+            speak(value, snapshot.ref!!)
         }
     }
 
     private fun display(value: SoundBite) {
-        chat_message.text = value.message!!
+        chat_message.text = value.message
     }
 
     private fun registerSpeaker(channel: String, database: FirebaseDatabase) {
@@ -121,16 +120,14 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     private fun createBiteWithDefaults(message: String): SoundBite {
-        val soundBite = SoundBite()
-        soundBite.id = 0
-        soundBite.language = getPrefValue(R.string.pref_language)
-        soundBite.pitch = getPrefValue(R.string.pref_pitch)
-        soundBite.speed = getPrefValue(R.string.pref_speed)
-        soundBite.volume = getPrefValue(R.string.pref_volume)
-        soundBite.message = message
-        soundBite.title = message
-
-        return soundBite
+        return SoundBite(
+                language = getPrefValue(R.string.pref_language),
+                pitch = getPrefValue(R.string.pref_pitch),
+                speed = getPrefValue(R.string.pref_speed),
+                volume = getPrefValue(R.string.pref_volume),
+                message = message,
+                title = message
+        )
     }
 
     private fun getPrefValue(resourceId: Int): String {
@@ -184,7 +181,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         val params = HashMap<String, String>()
         params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "text")
         itsTextToSpeech!!.setPitch(java.lang.Float.parseFloat(bite.pitch))
-        itsTextToSpeech!!.language = parseLocale(bite.language!!)
+        itsTextToSpeech!!.language = parseLocale(bite.language)
         itsTextToSpeech!!.setSpeechRate(java.lang.Float.parseFloat(bite.speed))
         itsTextToSpeech!!.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
     }
