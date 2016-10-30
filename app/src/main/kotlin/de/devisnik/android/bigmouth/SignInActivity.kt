@@ -2,6 +2,7 @@ package de.devisnik.android.bigmouth
 
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
@@ -15,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
+import de.devisnik.android.bigmouth.data.User
 
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -106,11 +108,21 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             }
 
             val users = FirebaseDatabase.getInstance().getReference("users")
-            users.updateChildren(mapOf(Pair(acct.id, acct.displayName)))
+
+            val user = User()
+            user.name = acct.displayName
+            user.language = getPrefValue(R.string.pref_language)
+
+            users.updateChildren(mapOf(Pair(acct.id, user)))
 
             val intent = Intent(this@SignInActivity, BitesChat::class.java)
             startActivity(intent)
         })
+    }
+
+    private fun getPrefValue(resourceId: Int): String {
+        return PreferenceManager.getDefaultSharedPreferences(this).getString(getString(resourceId),
+                null)
     }
 
     companion object {

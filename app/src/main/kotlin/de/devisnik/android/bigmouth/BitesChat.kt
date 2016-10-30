@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import de.devisnik.android.bigmouth.data.SoundBite
+import de.devisnik.android.bigmouth.data.User
 import kotlinx.android.synthetic.main.activity_bites_chat.*
 import java.util.*
 
@@ -36,7 +37,10 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
         database.getReference("users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
-                val channels = snapshot!!.children.map { it.value as String }.distinct().toList()
+                val channels = snapshot!!.children
+                        .map { it.getValue(User::class.java) }
+                        .map { it.name as String }
+                        .toList()
                 initChannels(database, channels)
             }
             override fun onCancelled(p0: DatabaseError?) {
