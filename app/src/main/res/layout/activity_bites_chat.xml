@@ -7,6 +7,7 @@
   <TextView
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:textStyle="bold"
       android:text="Speak to:"/>
 
   <Spinner
@@ -18,11 +19,25 @@
       android:id="@+id/chat_input"
       android:layout_width="fill_parent"
       android:layout_height="wrap_content"
+      android:hint="Enter message"
       android:drawSelectorOnTop="false"/>
 
   <Button
       android:id="@+id/chat_send"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_margin="10dp"
       android:text="Send"/>
+
+  <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textStyle="bold"
+      android:text="Last received message:"/>
+
+  <TextView
+      android:id="@+id/chat_message"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"/>
+
 </LinearLayout>

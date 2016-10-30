@@ -87,8 +87,13 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
         val ref = snapshot.ref!!
         if (value != null) {
+            display(value)
             speak(value, ref)
         }
+    }
+
+    private fun display(value: SoundBite) {
+        chat_message.text = value.message!!
     }
 
     private fun registerSpeaker(channel: String, database: FirebaseDatabase) {
