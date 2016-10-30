@@ -37,11 +37,10 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
         database.getReference("users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
-                val channels = snapshot!!.children
+                val users = snapshot!!.children
                         .map { it.getValue(User::class.java) }
-                        .map { it.name as String }
                         .toList()
-                initChannels(database, channels)
+                initChannels(database, users)
             }
             override fun onCancelled(p0: DatabaseError?) {
                 //no-op
@@ -53,11 +52,12 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         registerSpeaker(currentUser, database)
     }
 
-    private fun initChannels(database: FirebaseDatabase, channels: List<String>) {
-        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, channels)
+    private fun initChannels(database: FirebaseDatabase, channels: List<User>) {
+        chat_input_channel_chooser.adapter = ArrayAdapter<User>(this, android.R.layout.simple_list_item_1, channels)
 
         chat_send.setOnClickListener {
             val channel = channels[chat_input_channel_chooser.selectedItemPosition]
+
             val task = object : AsyncTask<String, Void, String>() {
                 override fun doInBackground(vararg text: String): String {
                     val from = getPrefValue(R.string.pref_language).substring(0..1)
@@ -69,7 +69,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
                 override fun onPostExecute(result: String) {
                     val bite = createBiteWithDefaults(result)
                     bite.language = "en-GB"
-                    val channelRef = database.getReference(channel)
+                    val channelRef = database.getReference(channel.name!!)
                     channelRef.setValue(bite)
                 }
             }

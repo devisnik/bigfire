@@ -6,6 +6,9 @@ class User {
     var name: String? = null
     var language: String? = null
 
+    override fun toString(): String {
+        return name!!
+    }
 }
 
 
