@@ -127,8 +127,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     private fun getPrefValue(resourceId: Int): String {
-        return PreferenceManager.getDefaultSharedPreferences(this).getString(getString(resourceId),
-                null)
+        return PreferenceManager.getDefaultSharedPreferences(this).getString(getString(resourceId), null)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
@@ -207,22 +206,19 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        if (item!!.itemId == R.id.settings) {
+        if (item.itemId == R.id.settings) {
             val intent = Intent(this, BitePreferences::class.java)
             startActivity(intent)
             return true
         }
-
         return super.onOptionsItemSelected(item)
     }
 
     internal fun stopSpeaking() {
-        if (itsTextToSpeech == null || !itsTextToSpeech!!.isSpeaking) {
-            return
+        if (itsTextToSpeech != null && itsTextToSpeech!!.isSpeaking) {
+            itsTextToSpeech?.stop()
+            adjustAudio(itsRestoreAudio)
         }
-        itsTextToSpeech?.stop()
-        adjustAudio(itsRestoreAudio)
     }
 
     companion object {
