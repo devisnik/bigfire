@@ -6,20 +6,16 @@ import org.json.JSONObject
 
 class Translator {
 
-    private val API_KEY = BuildConfig.YANDEX_API_KEY
-
-    private val client: OkHttpClient
-    private val url: String
-
-    init {
-        client = OkHttpClient ()
-        url = "https://translate.yandex.net/api/v1.5/tr.json/translate"
+    companion object {
+        private val API_KEY = BuildConfig.YANDEX_API_KEY
+        private val URL: String = "https://translate.yandex.net/api/v1.5/tr.json/translate"
     }
 
+    private val client: OkHttpClient = OkHttpClient()
 
     fun translate(text: String, from: String, to: String): String {
         val request = Request.Builder()
-                .url("$url?lang=$from-$to&key=$API_KEY&text=$text")
+                .url("$URL?lang=$from-$to&key=$API_KEY&text=$text")
                 .get()
                 .build()
         val response = client.newCall(request).execute()
