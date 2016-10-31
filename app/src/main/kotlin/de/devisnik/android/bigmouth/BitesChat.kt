@@ -1,6 +1,5 @@
 package de.devisnik.android.bigmouth
 
-
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -36,14 +35,14 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         val database = FirebaseDatabase.getInstance()
 
         database.getReference("users").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot?) {
-                val users = snapshot!!.children
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val users = snapshot.children
                         .map { it.getValue(User::class.java) }
                         .toList()
                 initChannels(database, users)
             }
 
-            override fun onCancelled(p0: DatabaseError?) {
+            override fun onCancelled(p0: DatabaseError) {
                 //no-op
             }
         })
@@ -54,7 +53,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     private fun initChannels(database: FirebaseDatabase, channels: List<User>) {
-        chat_input_channel_chooser.adapter = ArrayAdapter<User>(this, android.R.layout.simple_list_item_1, channels)
+        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, channels.map(User::name))
 
         chat_send.setOnClickListener {
             val user = channels[chat_input_channel_chooser.selectedItemPosition]
@@ -78,8 +77,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         }
     }
 
-    override fun onCancelled(p0: DatabaseError?) {
-
+    override fun onCancelled(p0: DatabaseError) {
     }
 
     override fun onDataChange(snapshot: DataSnapshot) {
@@ -106,9 +104,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
     }
 
     override fun onStop() {
-        if (itsTextToSpeech != null) {
-            itsTextToSpeech!!.shutdown()
-        }
+        itsTextToSpeech?.shutdown()
         itsTextToSpeech = null
         super.onStop()
     }
@@ -168,7 +164,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
             LOGGER.e("TTS not properly set up!")
             return
         }
-        itsTextToSpeech!!.setOnUtteranceCompletedListener {
+        itsTextToSpeech?.setOnUtteranceCompletedListener {
             adjustAudio(itsRestoreAudio)
             ref.removeValue()
         }
@@ -180,10 +176,10 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         }
         val params = HashMap<String, String>()
         params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "text")
-        itsTextToSpeech!!.setPitch(java.lang.Float.parseFloat(bite.pitch))
-        itsTextToSpeech!!.language = parseLocale(bite.language)
-        itsTextToSpeech!!.setSpeechRate(java.lang.Float.parseFloat(bite.speed))
-        itsTextToSpeech!!.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
+        itsTextToSpeech?.setPitch(java.lang.Float.parseFloat(bite.pitch))
+        itsTextToSpeech?.language = parseLocale(bite.language)
+        itsTextToSpeech?.setSpeechRate(java.lang.Float.parseFloat(bite.speed))
+        itsTextToSpeech?.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
     }
 
     private val maxAudio: Int
@@ -205,12 +201,12 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         return oldVolume
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
         MenuInflater(this).inflate(R.menu.bites_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (item!!.itemId == R.id.settings) {
             val intent = Intent(this, BitePreferences::class.java)
@@ -225,14 +221,12 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         if (itsTextToSpeech == null || !itsTextToSpeech!!.isSpeaking) {
             return
         }
-        itsTextToSpeech!!.stop()
+        itsTextToSpeech?.stop()
         adjustAudio(itsRestoreAudio)
     }
 
     companion object {
-
         private val CHECK_TTS = 11
-
         private val LOGGER = Logger(BitesChat::class.java)
     }
 }
