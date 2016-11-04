@@ -15,8 +15,8 @@ import android.view.MenuItem
 import android.widget.ArrayAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import de.devisnik.android.bigmouth.channels.Channel
 import de.devisnik.android.bigmouth.data.SoundBite
-import de.devisnik.android.bigmouth.data.User
 import de.devisnik.android.bigmouth.speaker.Speaker
 import de.devisnik.android.bigmouth.speaker.SpeakerPresenter
 import kotlinx.android.synthetic.main.activity_bites_chat.*
@@ -40,7 +40,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
         database.getReference("users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val users = snapshot.children
-                        .map { it.getValue(User::class.java) }
+                        .map { it.getValue(Channel::class.java) }
                         .toList()
                 initChannels(database, users)
             }
@@ -55,8 +55,8 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
         speakerPresenter = SpeakerPresenter(currentUser)
     }
 
-    private fun initChannels(database: FirebaseDatabase, channels: List<User>) {
-        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, channels.map(User::name))
+    private fun initChannels(database: FirebaseDatabase, channels: List<Channel>) {
+        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, channels.map(Channel::name))
 
         chat_send.setOnClickListener {
             val user = channels[chat_input_channel_chooser.selectedItemPosition]
