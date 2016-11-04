@@ -15,10 +15,10 @@ class SpeakerUseCase(channelName: String) {
     init {
         FirebaseDatabase.getInstance()
                 .getReference(channelName)
-                .addValueEventListener(listenToChannel())
+                .addValueEventListener(listenToSounds())
     }
 
-    private fun listenToChannel(): ValueEventListener {
+    private fun listenToSounds(): ValueEventListener {
         return object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val soundBite = snapshot?.getValue(SoundBite::class.java)
