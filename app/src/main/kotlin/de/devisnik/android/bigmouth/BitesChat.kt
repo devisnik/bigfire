@@ -3,6 +3,7 @@ package de.devisnik.android.bigmouth
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
+import android.media.AudioManager.STREAM_MUSIC
 import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -20,13 +21,14 @@ import de.devisnik.android.bigmouth.data.SoundBite
 import de.devisnik.android.bigmouth.speaker.Speaker
 import de.devisnik.android.bigmouth.speaker.SpeakerPresenter
 import kotlinx.android.synthetic.main.activity_bites_chat.*
+import java.lang.Float.parseFloat
 import java.util.*
 
 class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
     private var itsTextToSpeech: TextToSpeech? = null
     private var itsRestoreAudio = -1
 
-    private var speakerPresenter: SpeakerPresenter? = null
+    private lateinit var speakerPresenter: SpeakerPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LOGGER.d("onCreate")
@@ -37,18 +39,17 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
 
         val database = FirebaseDatabase.getInstance()
 
-        database.getReference("users").addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val users = snapshot.children
-                        .map { it.getValue(Channel::class.java) }
-                        .toList()
-                initChannels(database, users)
-            }
+        database.getReference("users")
+                .addValueEventListener(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val users = snapshot.children
+                                .map { it.getValue(Channel::class.java) }
+                                .toList()
+                        initChannels(database, users)
+                    }
 
-            override fun onCancelled(p0: DatabaseError) {
-                //no-op
-            }
-        })
+                    override fun onCancelled(p0: DatabaseError) = Unit
+                })
 
 
         val currentUser = FirebaseAuth.getInstance().currentUser!!.displayName!!
@@ -65,9 +66,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
                 override fun doInBackground(vararg text: String): String {
                     val from = getPrefValue(R.string.pref_language).substring(0..1)
                     val to = user.language.substring(0..1)
-                    return Translator().translate(text[0],
-                            from = from,
-                            to = to)
+                    return Translator().translate(text[0], from = from, to = to)
                 }
 
                 override fun onPostExecute(result: String) {
@@ -91,13 +90,13 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
     override fun onStart() {
         super.onStart()
         startCheckTTS()
-        speakerPresenter?.bind(this)
+        speakerPresenter.bind(this)
     }
 
     override fun onStop() {
         itsTextToSpeech?.shutdown()
         itsTextToSpeech = null
-        speakerPresenter?.unbind()
+        speakerPresenter.unbind()
         super.onStop()
     }
 
@@ -163,54 +162,45 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
         if (getString(R.string.volume_value_no_adjust) == bite.volume) {
             itsRestoreAudio = currentAudio
         } else {
-            itsRestoreAudio = adjustAudio(Math.round(maxAudio * java.lang.Float.parseFloat(bite.volume)))
+            itsRestoreAudio = adjustAudio(Math.round(maxAudio * parseFloat(bite.volume)))
         }
         val params = HashMap<String, String>()
         params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "text")
-        itsTextToSpeech?.setPitch(java.lang.Float.parseFloat(bite.pitch))
+        itsTextToSpeech?.setPitch(parseFloat(bite.pitch))
         itsTextToSpeech?.language = parseLocale(bite.language)
-        itsTextToSpeech?.setSpeechRate(java.lang.Float.parseFloat(bite.speed))
+        itsTextToSpeech?.setSpeechRate(parseFloat(bite.speed))
         itsTextToSpeech?.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
     }
 
     private fun speak(bite: SoundBite) {
-        if (itsTextToSpeech == null) {
+        val tts = itsTextToSpeech
+        if (tts == null) {
             LOGGER.e("TTS not properly set up!")
             return
         }
-        itsTextToSpeech?.setOnUtteranceCompletedListener {
-            adjustAudio(itsRestoreAudio)
-        }
+        tts.setOnUtteranceCompletedListener { adjustAudio(itsRestoreAudio) }
 
         if (getString(R.string.volume_value_no_adjust) == bite.volume) {
             itsRestoreAudio = currentAudio
         } else {
-            itsRestoreAudio = adjustAudio(Math.round(maxAudio * java.lang.Float.parseFloat(bite.volume)))
+            itsRestoreAudio = adjustAudio(Math.round(maxAudio * parseFloat(bite.volume)))
         }
         val params = HashMap<String, String>()
         params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "text")
-        itsTextToSpeech?.setPitch(java.lang.Float.parseFloat(bite.pitch))
-        itsTextToSpeech?.language = parseLocale(bite.language)
-        itsTextToSpeech?.setSpeechRate(java.lang.Float.parseFloat(bite.speed))
-        itsTextToSpeech?.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
+        tts.setPitch(parseFloat(bite.pitch))
+        tts.language = parseLocale(bite.language)
+        tts.setSpeechRate(parseFloat(bite.speed))
+        tts.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
     }
 
-    private val maxAudio: Int
-        get() {
-            val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            return audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        }
+    private val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
 
-    private val currentAudio: Int
-        get() {
-            val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            return audio.getStreamVolume(AudioManager.STREAM_MUSIC)
-        }
+    private val maxAudio: Int = audio.getStreamMaxVolume(STREAM_MUSIC)
+    private val currentAudio: Int = audio.getStreamVolume(STREAM_MUSIC)
 
     private fun adjustAudio(value: Int): Int {
-        val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val oldVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC)
-        audio.setStreamVolume(AudioManager.STREAM_MUSIC, value, 0)
+        val oldVolume = audio.getStreamVolume(STREAM_MUSIC)
+        audio.setStreamVolume(STREAM_MUSIC, value, 0)
         return oldVolume
     }
 
@@ -221,8 +211,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.settings) {
-            val intent = Intent(this, BitePreferences::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, BitePreferences::class.java))
             return true
         }
         return super.onOptionsItemSelected(item)

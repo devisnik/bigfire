@@ -16,10 +16,7 @@ class SpeakerPresenter(channelName: String) {
                 }
     }
 
-
     fun unbind() {
         soundSubscription.unsubscribe()
     }
-
-
 }

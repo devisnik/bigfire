@@ -18,26 +18,17 @@ class SpeakerUseCase(channelName: String) {
                 .addValueEventListener(listenToSounds())
     }
 
-    private fun listenToSounds(): ValueEventListener {
-        return object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot?) {
-                val soundBite = snapshot?.getValue(SoundBite::class.java)
-                if (soundBite != null) {
-                    soundSubject.onNext(soundBite)
-                }
-            }
-
-            override fun onCancelled(p0: DatabaseError?) {
-                // no-op
-            }
+    private fun listenToSounds(): ValueEventListener = object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            val soundBite = snapshot.getValue(SoundBite::class.java)
+            soundBite?.let { soundSubject.onNext(soundBite) }
         }
+
+        override fun onCancelled(error: DatabaseError) = Unit
     }
 
+    fun soundStream(): Observable<SoundBite> = soundSubject.asObservable()
 
-    fun soundStream(): Observable<SoundBite> {
-        return soundSubject
-                .asObservable()
-    }
 }
 
 
