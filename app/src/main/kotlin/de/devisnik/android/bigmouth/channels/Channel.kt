@@ -1,4 +1,4 @@
 package de.devisnik.android.bigmouth.channels
 
-data class Channel(var name: String = "", var language: String = "")
+data class Channel(val name: String = "", val language: String = "")
 

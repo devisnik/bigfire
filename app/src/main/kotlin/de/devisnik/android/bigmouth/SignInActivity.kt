@@ -24,9 +24,9 @@ import de.devisnik.android.bigmouth.channels.Channel
  */
 class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener {
 
-    private var mGoogleApiClient: GoogleApiClient? = null
-    private var mAuth: FirebaseAuth? = null
-    private var mAuthListener: FirebaseAuth.AuthStateListener? = null
+    private lateinit var mGoogleApiClient: GoogleApiClient
+    private lateinit var mAuth: FirebaseAuth
+    private lateinit var mAuthListener: FirebaseAuth.AuthStateListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,11 +58,11 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
 
     override fun onStart() {
         super.onStart()
-        mAuth!!.addAuthStateListener(mAuthListener!!)
+        mAuth.addAuthStateListener(mAuthListener)
     }
 
     override fun onStop() {
-        mAuth!!.removeAuthStateListener(mAuthListener!!)
+        mAuth.removeAuthStateListener(mAuthListener)
         super.onStop()
     }
 
@@ -94,7 +94,7 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     private fun firebaseAuthWithGoogle(acct: GoogleSignInAccount) {
 
         val credential = GoogleAuthProvider.getCredential(acct.idToken, null)
-        mAuth!!.signInWithCredential(credential).addOnCompleteListener(this, OnCompleteListener<com.google.firebase.auth.AuthResult> { task ->
+        mAuth.signInWithCredential(credential).addOnCompleteListener(this, OnCompleteListener<com.google.firebase.auth.AuthResult> { task ->
             Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful)
 
             // If sign in fails, display a message to the user. If sign in succeeds
@@ -109,9 +109,8 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
 
             val users = FirebaseDatabase.getInstance().getReference("users")
 
-            val channel = Channel()
-            channel.name = acct.displayName ?: ""
-            channel.language = getPrefValue(R.string.pref_language) ?: "en-GB"
+            val channel = Channel(name = acct.displayName ?: "",
+                    language = getPrefValue(R.string.pref_language, default = "en-GB"))
 
             users.child(acct.id).setValue(channel)
 
@@ -120,9 +119,9 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
         })
     }
 
-    private fun getPrefValue(resourceId: Int): String? {
-        return PreferenceManager.getDefaultSharedPreferences(this).getString(getString(resourceId),
-                null)
+    private fun getPrefValue(resourceId: Int, default: String): String {
+        return PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(resourceId), default)
     }
 
     companion object {
