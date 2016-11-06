@@ -16,7 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.FirebaseDatabase
-import de.devisnik.android.bigmouth.data.User
+import de.devisnik.android.bigmouth.channels.Channel
 
 /**
  * Activity to demonstrate basic retrieval of the Google user's ID, email address, and basic
@@ -41,10 +41,10 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
         mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             if (user != null) {
-                // User is signed in
+                // Channel is signed in
                 Log.d(TAG, "onAuthStateChanged:signed_in:" + user.uid)
             } else {
-                // User is signed out
+                // Channel is signed out
                 Log.d(TAG, "onAuthStateChanged:signed_out")
             }
         }
@@ -109,11 +109,11 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
 
             val users = FirebaseDatabase.getInstance().getReference("users")
 
-            val user = User()
-            user.name = acct.displayName ?: ""
-            user.language = getPrefValue(R.string.pref_language) ?: "en-GB"
+            val channel = Channel()
+            channel.name = acct.displayName ?: ""
+            channel.language = getPrefValue(R.string.pref_language) ?: "en-GB"
 
-            users.child(acct.id).setValue(user)
+            users.child(acct.id).setValue(channel)
 
             val intent = Intent(this@SignInActivity, BitesChat::class.java)
             startActivity(intent)

@@ -15,15 +15,18 @@ import android.view.MenuItem
 import android.widget.ArrayAdapter
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import de.devisnik.android.bigmouth.channels.Channel
 import de.devisnik.android.bigmouth.data.SoundBite
-import de.devisnik.android.bigmouth.data.User
+import de.devisnik.android.bigmouth.speaker.Speaker
+import de.devisnik.android.bigmouth.speaker.SpeakerPresenter
 import kotlinx.android.synthetic.main.activity_bites_chat.*
 import java.util.*
 
-class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
-
+class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
     private var itsTextToSpeech: TextToSpeech? = null
     private var itsRestoreAudio = -1
+
+    private var speakerPresenter: SpeakerPresenter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         LOGGER.d("onCreate")
@@ -37,7 +40,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         database.getReference("users").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val users = snapshot.children
-                        .map { it.getValue(User::class.java) }
+                        .map { it.getValue(Channel::class.java) }
                         .toList()
                 initChannels(database, users)
             }
@@ -49,11 +52,11 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
 
 
         val currentUser = FirebaseAuth.getInstance().currentUser!!.displayName!!
-        registerSpeaker(currentUser, database)
+        speakerPresenter = SpeakerPresenter(currentUser)
     }
 
-    private fun initChannels(database: FirebaseDatabase, channels: List<User>) {
-        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, channels.map(User::name))
+    private fun initChannels(database: FirebaseDatabase, channels: List<Channel>) {
+        chat_input_channel_chooser.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, channels.map(Channel::name))
 
         chat_send.setOnClickListener {
             val user = channels[chat_input_channel_chooser.selectedItemPosition]
@@ -77,35 +80,24 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         }
     }
 
-    override fun onCancelled(p0: DatabaseError) {
-    }
-
-    override fun onDataChange(snapshot: DataSnapshot) {
-        val value = snapshot.getValue(SoundBite::class.java)
-
-        if (value != null) {
-            display(value)
-            speak(value, snapshot.ref!!)
-        }
+    override fun makeSound(sound: SoundBite) {
+        speak(sound)
     }
 
     private fun display(value: SoundBite) {
         chat_message.text = value.message
     }
 
-    private fun registerSpeaker(channel: String, database: FirebaseDatabase) {
-        val myRef = database.getReference(channel)
-        myRef.addValueEventListener(this)
-    }
-
     override fun onStart() {
         super.onStart()
         startCheckTTS()
+        speakerPresenter?.bind(this)
     }
 
     override fun onStop() {
         itsTextToSpeech?.shutdown()
         itsTextToSpeech = null
+        speakerPresenter?.unbind()
         super.onStop()
     }
 
@@ -166,6 +158,28 @@ class BitesChat : AppCompatActivity(), OnInitListener, ValueEventListener {
         itsTextToSpeech?.setOnUtteranceCompletedListener {
             adjustAudio(itsRestoreAudio)
             ref.removeValue()
+        }
+
+        if (getString(R.string.volume_value_no_adjust) == bite.volume) {
+            itsRestoreAudio = currentAudio
+        } else {
+            itsRestoreAudio = adjustAudio(Math.round(maxAudio * java.lang.Float.parseFloat(bite.volume)))
+        }
+        val params = HashMap<String, String>()
+        params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "text")
+        itsTextToSpeech?.setPitch(java.lang.Float.parseFloat(bite.pitch))
+        itsTextToSpeech?.language = parseLocale(bite.language)
+        itsTextToSpeech?.setSpeechRate(java.lang.Float.parseFloat(bite.speed))
+        itsTextToSpeech?.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
+    }
+
+    private fun speak(bite: SoundBite) {
+        if (itsTextToSpeech == null) {
+            LOGGER.e("TTS not properly set up!")
+            return
+        }
+        itsTextToSpeech?.setOnUtteranceCompletedListener {
+            adjustAudio(itsRestoreAudio)
         }
 
         if (getString(R.string.volume_value_no_adjust) == bite.volume) {
