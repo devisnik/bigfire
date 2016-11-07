@@ -101,21 +101,17 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
     }
 
     private fun startCheckTTS() {
-        val ttsIntent = Intent()
-        ttsIntent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
-        startActivityForResult(ttsIntent, CHECK_TTS)
+        startActivityForResult(Intent(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA), CHECK_TTS)
     }
 
-    private fun createBiteWithDefaults(message: String): SoundBite {
-        return SoundBite(
-                language = getPrefValue(R.string.pref_language),
-                pitch = getPrefValue(R.string.pref_pitch),
-                speed = getPrefValue(R.string.pref_speed),
-                volume = getPrefValue(R.string.pref_volume),
-                message = message,
-                title = message
-        )
-    }
+    private fun createBiteWithDefaults(message: String): SoundBite = SoundBite(
+            language = getPrefValue(R.string.pref_language),
+            pitch = getPrefValue(R.string.pref_pitch),
+            speed = getPrefValue(R.string.pref_speed),
+            volume = getPrefValue(R.string.pref_volume),
+            message = message,
+            title = message
+    )
 
     private fun getPrefValue(resourceId: Int): String {
         return PreferenceManager.getDefaultSharedPreferences(this).getString(getString(resourceId), null)
@@ -178,19 +174,20 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
             LOGGER.e("TTS not properly set up!")
             return
         }
-        tts.setOnUtteranceCompletedListener { adjustAudio(itsRestoreAudio) }
 
-        if (getString(R.string.volume_value_no_adjust) == bite.volume) {
-            itsRestoreAudio = currentAudio
+        itsRestoreAudio = if (getString(R.string.volume_value_no_adjust) == bite.volume) {
+            currentAudio
         } else {
-            itsRestoreAudio = adjustAudio(Math.round(maxAudio * parseFloat(bite.volume)))
+            adjustAudio(Math.round(maxAudio * parseFloat(bite.volume)))
         }
-        val params = HashMap<String, String>()
-        params.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "text")
-        tts.setPitch(parseFloat(bite.pitch))
-        tts.language = parseLocale(bite.language)
-        tts.setSpeechRate(parseFloat(bite.speed))
-        tts.speak(bite.message, TextToSpeech.QUEUE_FLUSH, params)
+
+        tts.run {
+            setOnUtteranceCompletedListener { adjustAudio(itsRestoreAudio) }
+            setPitch(parseFloat(bite.pitch))
+            language = parseLocale(bite.language)
+            setSpeechRate(parseFloat(bite.speed))
+            speak(bite.message, TextToSpeech.QUEUE_FLUSH, hashMapOf(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID to "text"))
+        }
     }
 
     private val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -198,9 +195,9 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
     private val maxAudio: Int = audio.getStreamMaxVolume(STREAM_MUSIC)
     private val currentAudio: Int = audio.getStreamVolume(STREAM_MUSIC)
 
-    private fun adjustAudio(value: Int): Int {
-        val oldVolume = audio.getStreamVolume(STREAM_MUSIC)
-        audio.setStreamVolume(STREAM_MUSIC, value, 0)
+    private fun adjustAudio(value: Int): Int = audio.run {
+        val oldVolume = getStreamVolume(STREAM_MUSIC)
+        setStreamVolume(STREAM_MUSIC, value, 0)
         return oldVolume
     }
 
