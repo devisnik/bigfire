@@ -37,6 +37,8 @@ class EditChannelActivity : AppCompatActivity() {
 
     private fun setupViews() {
         val isChannelServiceRunning = isServiceRunning(ChannelService::class.java.name!!)
+        edit_channel_name.isEnabled = !isChannelServiceRunning
+
         if (isChannelServiceRunning) {
             edit_channel_start.visibility = View.GONE
             edit_channel_stop.visibility = View.VISIBLE
