@@ -3,7 +3,6 @@ package de.devisnik.android.bigmouth
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
-import android.media.AudioManager.STREAM_MUSIC
 import android.os.AsyncTask
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -190,14 +189,22 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
         }
     }
 
-    private val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val maxAudio: Int
+        get() {
+            val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            return audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        }
 
-    private val maxAudio: Int = audio.getStreamMaxVolume(STREAM_MUSIC)
-    private val currentAudio: Int = audio.getStreamVolume(STREAM_MUSIC)
+    private val currentAudio: Int
+        get() {
+            val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            return audio.getStreamVolume(AudioManager.STREAM_MUSIC)
+        }
 
-    private fun adjustAudio(value: Int): Int = audio.run {
-        val oldVolume = getStreamVolume(STREAM_MUSIC)
-        setStreamVolume(STREAM_MUSIC, value, 0)
+    private fun adjustAudio(value: Int): Int {
+        val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val oldVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC)
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, value, 0)
         return oldVolume
     }
 
