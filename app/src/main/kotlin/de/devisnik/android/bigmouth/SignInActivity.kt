@@ -127,7 +127,7 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
 
     companion object {
 
-        fun create(context: Context): Intent {
+        fun createIntent(context: Context): Intent {
             val intent = Intent(context, SignInActivity::class.java)
             return intent
         }

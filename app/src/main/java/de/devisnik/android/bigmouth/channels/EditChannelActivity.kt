@@ -51,7 +51,7 @@ class EditChannelActivity : AppCompatActivity() {
         FirebaseAuth.getInstance().addAuthStateListener({ firebaseAuth ->
             val user = firebaseAuth.currentUser
             if (user == null) {
-                val signInIntent = SignInActivity.create(this)
+                val signInIntent = SignInActivity.createIntent(this)
                 startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN)
             }
         })
@@ -62,7 +62,7 @@ class EditChannelActivity : AppCompatActivity() {
     }
 
     private fun startChannel(channelName: String) {
-        val serviceIntent = ChannelService.startIntent(this, channelName)
+        val serviceIntent = ChannelService.createIntent(this, channelName)
         startService(serviceIntent)
     }
 

@@ -64,7 +64,7 @@ class ChannelService : Service() {
     companion object {
         val EXTRA_CHANNEL_NAME = "channel_name"
 
-        fun startIntent(context: Context, channelName: String): Intent {
+        fun createIntent(context: Context, channelName: String): Intent {
             val service = intent(context)
             service.putExtra(EXTRA_CHANNEL_NAME, channelName)
             return service
