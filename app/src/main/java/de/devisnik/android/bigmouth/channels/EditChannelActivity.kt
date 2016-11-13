@@ -3,12 +3,14 @@ package de.devisnik.android.bigmouth.channels
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Bundle
+import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.View
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import de.devisnik.android.bigmouth.R
+import de.devisnik.android.bigmouth.SignInActivity
 import kotlinx.android.synthetic.main.activity_edit_channel.*
-import java.util.*
 
 class EditChannelActivity : AppCompatActivity() {
 
@@ -16,7 +18,25 @@ class EditChannelActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_channel)
 
-        val isChannelServiceRunning = isServiceRunning(ChannelService::class.java.simpleName!!)
+        setupViews()
+
+        edit_channel_start.setOnClickListener {
+            val channelName = edit_channel_name.text.toString()
+            if (channelName.isNotEmpty()) {
+                createChannel(channelName)
+                startChannel(channelName)
+                setupViews()
+            }
+        }
+
+        edit_channel_stop.setOnClickListener {
+            stopCurrentChannel()
+            setupViews()
+        }
+    }
+
+    private fun setupViews() {
+        val isChannelServiceRunning = isServiceRunning(ChannelService::class.java.name!!)
         if (isChannelServiceRunning) {
             edit_channel_start.visibility = View.GONE
             edit_channel_stop.visibility = View.VISIBLE
@@ -24,18 +44,17 @@ class EditChannelActivity : AppCompatActivity() {
             edit_channel_start.visibility = View.VISIBLE
             edit_channel_stop.visibility = View.GONE
         }
+    }
 
-        edit_channel_start.setOnClickListener {
-            val channelName = edit_channel_name.text.toString()
-            if (channelName.isNotEmpty()) {
-                registerChannel(channelName)
-                startChannel(channelName)
+    override fun onResume() {
+        super.onResume()
+        FirebaseAuth.getInstance().addAuthStateListener({ firebaseAuth ->
+            val user = firebaseAuth.currentUser
+            if (user == null) {
+                val signInIntent = SignInActivity.create(this)
+                startActivityForResult(signInIntent, REQUEST_CODE_SIGN_IN)
             }
-        }
-
-        edit_channel_stop.setOnClickListener {
-            stopCurrentChannel()
-        }
+        })
     }
 
     private fun stopCurrentChannel() {
@@ -47,10 +66,16 @@ class EditChannelActivity : AppCompatActivity() {
         startService(serviceIntent)
     }
 
-    private fun registerChannel(channelName: String) {
+    private fun createChannel(channelName: String) {
+        val id = getAndroidId()
+
         val users = FirebaseDatabase.getInstance().getReference("users")
         val channel = Channel(name = channelName, language = "en-GB")
-        users.child(UUID.randomUUID().toString()).setValue(channel)
+        users.child(id).setValue(channel)
+    }
+
+    private fun getAndroidId(): String {
+        return Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID)
     }
 
     fun isServiceRunning(serviceClassName: String): Boolean {
@@ -63,5 +88,9 @@ class EditChannelActivity : AppCompatActivity() {
             }
         }
         return false
+    }
+
+    companion object {
+        private val REQUEST_CODE_SIGN_IN = 100
     }
 }
