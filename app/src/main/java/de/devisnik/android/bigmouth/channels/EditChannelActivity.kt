@@ -1,6 +1,7 @@
 package de.devisnik.android.bigmouth.channels
 
 import android.app.ActivityManager
+import android.app.NotificationManager
 import android.content.Context
 import android.os.Bundle
 import android.provider.Settings
@@ -31,6 +32,8 @@ class EditChannelActivity : AppCompatActivity() {
 
         edit_channel_stop.setOnClickListener {
             stopCurrentChannel()
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancelAll()
             setupViews()
         }
     }
