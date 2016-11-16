@@ -1,5 +1,7 @@
 package de.devisnik.android.bigmouth
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -108,11 +110,10 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
             }
 
             val users = FirebaseDatabase.getInstance().getReference("users")
-
-            val channel = Channel(name = acct.displayName ?: "",
-                    language = getPrefValue(R.string.pref_language, default = "en-GB"))
-
+            val channel = Channel(name = acct.displayName ?: "", language = getPrefValue(R.string.pref_language, default = "en-GB"))
             users.child(acct.id).setValue(channel)
+
+            setResult(Activity.RESULT_OK)
 
             val intent = Intent(this@SignInActivity, BitesChat::class.java)
             startActivity(intent)
@@ -125,6 +126,11 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
     }
 
     companion object {
+
+        fun createIntent(context: Context): Intent {
+            val intent = Intent(context, SignInActivity::class.java)
+            return intent
+        }
 
         private val RC_SIGN_IN = 9001
         private val TAG = SignInActivity::class.java.javaClass.simpleName
