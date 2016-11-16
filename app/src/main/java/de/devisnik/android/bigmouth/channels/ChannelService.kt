@@ -20,7 +20,7 @@ import de.devisnik.android.bigmouth.speaker.SpeakerUseCase
 class ChannelService : Service() {
 
     private val channelBinder = MyBinder()
-    private var notificationManager : NotificationManager? = null
+    private var notificationManager: NotificationManager? = null
 
     override fun onBind(intent: Intent?): IBinder {
         return channelBinder
@@ -33,10 +33,10 @@ class ChannelService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        showNotification()
 
         val channelName = intent?.getStringExtra(EXTRA_CHANNEL_NAME)
         if (channelName != null) {
+            showNotification(channelName)
             val useCase = SpeakerUseCase(channelName)
             useCase
                     .soundStream()
@@ -48,11 +48,11 @@ class ChannelService : Service() {
     }
 
 
-    private fun showNotification() {
-        notificationManager?.notify(NOTIFICATION, notification())
+    private fun showNotification(channelName: String) {
+        notificationManager?.notify(NOTIFICATION, notification(channelName))
     }
 
-    private fun notification(): Notification {
+    private fun notification(channelName: String): Notification {
         val pendingIntent = PendingIntent.getActivity(this, 0,
                 Intent(this, EditChannelActivity::class.java)
                         .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP), 0)
@@ -66,7 +66,7 @@ class ChannelService : Service() {
                 .setContentIntent(pendingIntent)
                 .setOngoing(true)
                 .setTicker("Edit Channel")
-                .setContentText("Click to open EditChannel Screen")
+                .setContentText("Click edit Channel $channelName")
                 .build()
     }
 
