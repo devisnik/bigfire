@@ -8,7 +8,7 @@ class Translator {
 
     companion object {
         private val API_KEY = BuildConfig.YANDEX_API_KEY
-        private val URL: String = "https://translate.yandex.net/api/v1.5/tr.json/translate"
+        private val URL = "https://translate.yandex.net/api/v1.5/tr.json/translate"
     }
 
     private val client: OkHttpClient = OkHttpClient()

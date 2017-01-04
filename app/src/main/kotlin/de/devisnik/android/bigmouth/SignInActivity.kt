@@ -39,21 +39,17 @@ class SignInActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLi
         mAuth = FirebaseAuth.getInstance()
 
         mAuthListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
-            val user = firebaseAuth.currentUser
-            if (user != null) {
-                // Channel is signed in
-                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.uid)
-            } else {
-                // Channel is signed out
-                Log.d(TAG, "onAuthStateChanged:signed_out")
+            firebaseAuth.currentUser.let { user ->
+                Log.d(TAG, if (user != null) "onAuthStateChanged:signed_in:" + user.uid else "onAuthStateChanged:signed_out")
             }
         }
 
-        val signInButton = findViewById(R.id.sign_in_button) as SignInButton
-        signInButton.setSize(SignInButton.SIZE_STANDARD)
-        signInButton.setScopes(gso.scopeArray)
+        with(findViewById(R.id.sign_in_button) as SignInButton) {
+            setSize(SignInButton.SIZE_STANDARD)
+            setScopes(gso.scopeArray)
+            setOnClickListener { signIn() }
+        }
 
-        signInButton.setOnClickListener { signIn() }
     }
 
     override fun onStart() {

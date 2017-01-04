@@ -190,7 +190,7 @@ class BitesChat : AppCompatActivity(), OnInitListener, Speaker {
         }
     }
 
-    private val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val audio by lazy { getSystemService(Context.AUDIO_SERVICE) as AudioManager  }
 
     private val maxAudio: Int = audio.getStreamMaxVolume(STREAM_MUSIC)
     private val currentAudio: Int = audio.getStreamVolume(STREAM_MUSIC)

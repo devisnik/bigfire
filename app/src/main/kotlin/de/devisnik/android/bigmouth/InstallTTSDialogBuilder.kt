@@ -10,10 +10,10 @@ class InstallTTSDialogBuilder(private val bitesChat: BitesChat) : AlertDialog.Bu
         setTitle(R.string.dialog_install_tts_title)
         setMessage(R.string.dialog_install_tts_message)
         setPositiveButton(R.string.dialog_install_tts_button) { dialog, which ->
-            val installIntent = Intent()
-            installIntent.action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
-            installIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            bitesChat.startActivity(installIntent)
+            bitesChat.startActivity(Intent().apply {
+                action = TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            })
         }
     }
 }
